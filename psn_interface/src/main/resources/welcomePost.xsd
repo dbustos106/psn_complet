@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://localhost/soap/api/WelcomePost"
+           targetNamespace="http://localhost/soap/api/WelcomePost"
+           elementFormDefault="qualified">
+
+    <!-- Definición de tipos de datos -->
+    <xs:element name="PostType">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="postId" type="xs:string"/>
+                <xs:element name="createdDate" type="xs:date"/>
+                <xs:element name="updatedDate" type="xs:date"/>
+                <xs:element name="ownerId" type="xs:int"/>
+                <xs:element name="location" type="xs:string"/>
+                <xs:element name="description" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Definición del mensaje de solicitud -->
+    <xs:element name="GetPostRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="postId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -1,0 +1,27 @@
+.p-listbox-item button {
+  display: inline-block;
+  margin-top: 5px;
+  margin-left: 10px;
+}
+
+.followRequest-table {
+  width: 70%; 
+  margin-left: auto;
+  margin-right: 15%;
+}
+  
+.followRequest-container {
+  max-height: calc(35vh - 10px); 
+  overflow-y: auto;
+}
+
+.blockRequest-table {
+  width: 70%; 
+  margin-left: auto;
+  margin-right: 15%;
+}
+  
+.blockRequest-container {
+  max-height: calc(35vh - 10px); 
+  overflow-y: auto;
+}

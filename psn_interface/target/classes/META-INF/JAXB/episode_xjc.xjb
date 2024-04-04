@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings version="3.0" xmlns="https://jakarta.ee/xml/ns/jaxb">
+  <!--
+
+Este archivo ha sido generado por Eclipse Implementation of JAXB v3.0.0 
+Visite https://eclipse-ee4j.github.io/jaxb-ri 
+Todas las modificaciones realizadas en este archivo se perderán si se vuelve a compilar el esquema de origen. 
+Generado el: 2023.06.05 a las 05:35:17 PM COT 
+
+  -->
+  <bindings scd="x-schema::tns" xmlns:tns="http://localhost/soap/api/WelcomePost">
+    <schemaBindings map="false">
+      <package name="localhost.soap.api.welcomepost"/>
+    </schemaBindings>
+    <bindings scd="tns:PostType">
+      <class ref="localhost.soap.api.welcomepost.PostType"/>
+    </bindings>
+    <bindings scd="tns:GetPostRequest">
+      <class ref="localhost.soap.api.welcomepost.GetPostRequest"/>
+    </bindings>
+  </bindings>
+</bindings>
+

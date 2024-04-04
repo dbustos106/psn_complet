@@ -1,0 +1,175 @@
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: psn-authentication-ms-service
+#spec:
+#  selector:
+#    app: psn-authentication-ms
+#  ports:
+#  - name: http
+#    protocol: TCP
+#    port: 4000
+#    targetPort: 4000
+#  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-ur-ms-service
+spec:
+  selector:
+    app: psn-ur-ms
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4200
+    targetPort: 4200
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-post-ms-service
+spec:
+  selector:
+    app: psn-post-ms
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4100
+    targetPort: 4100
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-chat-ms-service
+spec:
+  selector:
+    app: psn-chat-ms
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4300
+    targetPort: 4300
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-rabbitmq-service
+  annotations:
+    networking.gke.io/load-balancer-type: "Internal"
+    networking.gke.io/internal-load-balancer-allow-global-access: "true"
+spec:
+  selector:
+    app: psn-rabbitmq
+  ports:
+  - name: http
+    protocol: TCP
+    port: 5672
+    targetPort: 5672
+  - name: https
+    protocol: TCP
+    port: 15672
+    targetPort: 15672
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-notification-ms-service
+spec:
+  selector:
+    app: psn-notification-ms
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4400
+    targetPort: 4400
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-notification-ws-ms-service
+spec:
+  selector:
+    app: psn-notification-ws-ms
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4401
+    targetPort: 4401
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-ag-service
+  annotations:
+    networking.gke.io/load-balancer-type: "Internal"
+    networking.gke.io/internal-load-balancer-allow-global-access: "true"
+spec:
+  selector:
+    app: psn-ag
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4500
+    targetPort: 4500
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-interface-service
+  annotations:
+    networking.gke.io/load-balancer-type: "Internal"
+    networking.gke.io/internal-load-balancer-allow-global-access: "true"
+spec:
+  selector:
+    app: psn-interface
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4700
+    targetPort: 4700
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-wa-service
+  annotations:
+    networking.gke.io/load-balancer-type: "Internal"
+    networking.gke.io/internal-load-balancer-allow-global-access: "true"
+spec:
+  selector:
+    app: psn-wa
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4600
+    targetPort: 4600
+  type: LoadBalancer
+
+---

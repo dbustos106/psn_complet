@@ -1,0 +1,8 @@
+[
+    {
+      "origin": ["http://localhost:4600", "http://35.237.27.3:4600", "http://34.73.132.253:80"],
+      "method": ["GET", "POST"],
+      "responseHeader": ["Content-Type"],
+      "maxAgeSeconds": 3600
+    }
+]

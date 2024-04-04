@@ -1,0 +1,40 @@
+{
+    "/api/*": {
+        "target": "http://psn-ag-service:4500/",
+        "secure": false,
+        "pathRewrite": {
+            "^/api": ""
+        },
+        "changeOrigin": true,
+        "logLevel": "debug"
+    },
+    "/interface/*": {
+        "target": "http://psn-interface-service:4700/",
+        "secure": false,
+        "pathRewrite": {
+            "^/interface": ""
+        },
+        "changeOrigin": true,
+        "logLevel": "debug"
+    },
+    "/notification/socket.io/*":{
+        "target": "http://psn-notification-ws-ms-service:4401/",
+        "ws": true,
+        "secure": false,
+        "pathRewrite": {
+            "^/notification/socket.io": "/socket.io"
+        },
+        "changeOrigin": true,
+        "logLevel": "debug"
+    },
+    "/chat/socket.io/*":{
+        "target": "http://psn-chat-ms-service:4300/",
+        "ws": true,
+        "secure": false,
+        "pathRewrite": {
+            "^/chat/socket.io": "/socket.io"
+        },
+        "changeOrigin": true,
+        "logLevel": "debug"
+    }
+} 

@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="grid">
+    <div class="col-6">
+      <h2>Buscar usuarios</h2>
+      <form [formGroup]="searchForm">
+        <p-autoComplete formControlName="pattern" [suggestions]="filteredUsers" (completeMethod)="filterUser($event)" field="completeName" (onSelect)="searchUser()"></p-autoComplete>
+      </form>
+      <div class="p-listbox mt-3">
+        <div class="p-listbox-header">
+          Búsquedas recientes
+          <button type="button" pButton icon="pi pi-trash" (click)="deleteRecentSearchedUsers()" ></button>
+        </div>
+        <div class="p-listbox-list">
+          <div class="p-listbox-item" *ngFor="let user of recentSearchedUsers">
+            <div class="mr-2" routerLink="/psn/profile/{{user.id}}">{{user.name}} {{user.lastName}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6" style="margin-top: 132px;">
+      <div class="p-listbox mt-3 suggestedUser-table">
+        <div class="p-listbox-header">Amigos sugeridos</div>
+        <div class="p-listbox-list suggestedUser-container">
+          <div class="p-listbox-item" *ngFor="let user of suggestedUsers; let i=index">
+            <div class="profile-link">
+              <div class="profile-image-min" alt="Profile Image">
+                <img [src]="profileImageUrls[i]"/>
+              </div> 
+              <div class="profile-buttons">
+                <div class="ml-3">{{user.name}} {{user.lastName}}</div>
+                <button type="button" pButton label="Ver" routerLink="/psn/profile/{{user.id}}"></button>
+                <button type="button" pButton (click)="followUser(user.id)" label="Agregar"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

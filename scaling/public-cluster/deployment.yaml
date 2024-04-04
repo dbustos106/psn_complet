@@ -1,0 +1,144 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-phpldapadmin-deployment
+spec:
+  selector:
+    matchLabels:
+      app: psn-phpldapadmin
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: psn-phpldapadmin
+    spec:
+      containers:
+        - name: psn-phpldapadmin
+          image: osixia/phpldapadmin:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: LDAP_HOSTS
+              value: psn-openldap-service.loadbalancer.dns
+            - name: PHPLDAPADMIN_LDAP_HOSTS
+              value: psn-openldap-service.loadbalancer.dns
+            - name: PHPLDAPADMIN_HTTPS
+              value: "false"
+          readinessProbe: 
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe: 
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 60
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-phpmyadmin-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: psn-phpmyadmin
+    spec:
+      containers:
+      - name: psn-phpmyadmin
+        image: phpmyadmin/phpmyadmin:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: PMA_HOST
+          value: psn-authentication-db-service.loadbalancer.dns
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 60
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-ag-rp-deployment
+spec:
+  replicas: 3 #1
+  selector:
+    matchLabels:
+      app: psn-ag-rp
+  template:
+    metadata:
+      labels:
+        app: psn-ag-rp
+    spec:
+      containers:
+        - name: psn-ag-rp
+          image: julian9999/psn-ag-rp:v1.0
+          ports:
+            - containerPort: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-interface-rp-deployment
+spec:
+  replicas: 3 #1
+  selector:
+    matchLabels:
+      app: psn-interface-rp
+  template:
+    metadata:
+      labels:
+        app: psn-interface-rp
+    spec:
+      containers:
+        - name: psn-interface-rp
+          image: julian9999/psn-interface-rp:v1.0
+          ports:
+            - containerPort: 80
+            
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-wa-rp-deployment
+spec:
+  replicas: 3 #1
+  selector:
+    matchLabels:
+      app: psn-wa-rp
+  template:
+    metadata:
+      labels:
+        app: psn-wa-rp
+    spec:
+      containers:
+        - name: psn-wa-rp
+          image: julian9999/psn-wa-rp:v1.0
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+        
+---

@@ -1,0 +1,63 @@
+<div class="container">
+  <div class="profile-container">
+    <div class="profile-image-container">
+      <div class="profile-image" alt="Profile Image">
+        <img [src]="profileImageUrl"/>
+      </div> 
+      <p-button *ngIf="showButtons" class="change-image-button p-button-icon-only" (click)="changeProfileImage()">
+        <i class="pi pi-camera"></i>
+      </p-button> 
+      <p-dialog header="Subir imagen" [(visible)]="displayButtons">
+        <p-fileUpload name="photo" url="{{profileImageUrlPost}}" accept="image/png" (onUpload)="handleUpload()"></p-fileUpload>
+      </p-dialog>
+      <div class="user-buttons" *ngIf="!showButtons">
+        <button type="button" pButton (click)="createConversation(user.id)" icon="pi pi-comment"></button>
+        <button type="button" pButton *ngIf="showFollowUserButton" (click)="followUser(user.id)" icon="pi pi-user-plus"></button>
+        <button type="button" pButton *ngIf="showUnFollowUserButton" (click)="unFollowUser(user.id)" icon="pi pi-user-minus"></button>
+        <button type="button" pButton *ngIf="showBlockUserButton" (click)="blockUser(user.id)" icon="pi pi-lock"></button>
+        <button type="button" pButton *ngIf="showUnblockUserButton" (click)="unblockUser(user.id)" icon="pi pi-lock-open"></button>
+      </div>
+    </div>
+    <div class="profile-info">
+      <h2>Información de perfil</h2>
+      <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+        <div>
+          <div class="grid-container">
+            <label>Rol:</label>
+            <input type="text" placeholder="Rol" formControlName="role" pInputText>
+          </div>
+          <div class="grid-container">
+            <label>Email:</label>
+            <input type="email" placeholder="Email" formControlName="email" pInputText>
+          </div>
+          <div class="grid-container">
+            <label>Nombre:</label>
+            <input type="text" placeholder="Nombre" formControlName="name" pInputText>
+          </div>
+          <div class="grid-container">
+            <label>Apellido:</label>
+            <input type="text" placeholder="Apellido" formControlName="lastName" pInputText>
+          </div>
+          <div class="grid-container">
+            <label>Teléfono:</label>
+            <input type="text" placeholder="Teléfono" formControlName="phoneNumber" pInputText>
+          </div>
+          <div class="grid-container">
+            <label>Tipo de perfil:</label>
+            <p-dropdown [options]="profileTypeOptions" formControlName="profileType"></p-dropdown> 
+          </div>
+          <div class="grid-container">
+            <label>Ultima fecha de actualización:</label>
+            <input type="text" placeholder="ProfileUpdateDate" formControlName="profileUpdateDate" pInputText>
+          </div>
+          <div class="grid-container">
+            <label>Habilitar notificaciones:</label>
+            <input type="checkbox" formControlName="notificationsEnable" pCheckbox>
+          </div>
+        </div>
+        <p-button *ngIf="showButtonSubmit" label="Submit" type="submit" [disabled]="!this.profileForm.valid"></p-button>
+      </form>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,619 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-openldap-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-openldap
+  template:
+    metadata:
+      labels:
+        app: psn-openldap
+    spec:
+      containers:
+      - name: psn-openldap
+        image: osixia/openldap:latest
+        env:
+        - name: LDAP_ORGANISATION
+          value: pawsomenetwork
+        - name: LDAP_DOMAIN
+          value: pawsomenetwork.com
+        - name: LDAP_ADMIN_USERNAME
+          value: admin
+        - name: LDAP_ADMIN_PASSWORD
+          value: admin_pass
+        - name: LDAP_CONFIG_PASSWORD
+          value: config_pass
+        - name: LDAP_BASE_DN
+          value: dc=pawsomenetwork,dc=com
+        - name: LDAP_TLS_CRT_FILENAME
+          value: server.crt
+        - name: LDAP_TLS_KEY_FILENAME
+          value: server.key
+        - name: LDAP_TLS_CA_CRT_FILENAME
+          value: pawsomenetwork.com.ca.crt
+        - name: LDAP_READONLY_USER
+          value: "true"
+        - name: LDAP_READONLY_USER_USERNAME
+          value: user-ro
+        - name: LDAP_READONLY_USER_PASSWORD
+          value: ro_pass
+        ports:
+        - containerPort: 389
+        - containerPort: 636
+        volumeMounts:
+        - name: psn-openldap-volume
+          mountPath: /container/service/slapd/assets/certs/
+        - name: psn-openldap-volume
+          mountPath: /var/lib/ldap
+        - name: psn-openldap-volume
+          mountPath: /etc/ldap/slapd.d
+      volumes:
+      - name: psn-openldap-volume
+        persistentVolumeClaim:
+            claimName: psn-openldap-claim
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-phpldapadmin-deployment
+spec:
+  selector:
+    matchLabels:
+      app: psn-phpldapadmin
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: psn-phpldapadmin
+    spec:
+      containers:
+        - name: psn-phpldapadmin
+          image: osixia/phpldapadmin:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: LDAP_HOSTS
+              value: psn-openldap-service
+            - name: PHPLDAPADMIN_LDAP_HOSTS
+              value: psn-openldap-service
+            - name: PHPLDAPADMIN_HTTPS
+              value: "false"
+          readinessProbe: 
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe: 
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 60
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-authentication-db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-authentication-db
+  template:
+    metadata:
+      labels:
+        app: psn-authentication-db
+    spec:
+      containers:
+      - name: psn-authentication-db
+        image: julian9999/psn-authentication-db:v1.0
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "123"
+        - name: MYSQL_DATABASE
+          value: psn-authentication-db
+        - name: MYSQL_USER
+          value: psn_admin
+        - name: MYSQL_PASSWORD
+          value: "123"
+        volumeMounts:
+        - name: psn-mysql-volume
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: psn-mysql-volume
+        persistentVolumeClaim:
+            claimName: psn-mysql-claim
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-phpmyadmin-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: psn-phpmyadmin
+    spec:
+      containers:
+      - name: psn-phpmyadmin
+        image: phpmyadmin/phpmyadmin:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: PMA_HOST
+          value: psn-authentication-db-service
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 60
+
+---
+
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: psn-authentication-ms-deployment
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: psn-authentication-ms
+#  template:
+#    metadata:
+#      labels:
+#        app: psn-authentication-ms
+#    spec:
+#      containers:
+#      - name: psn-authentication-ms
+#        image: julian9999/psn-authentication-ms:v1.0
+#        ports:
+#        - containerPort: 4000
+#        env:
+#        - name: DB_HOST
+#          value: psn-authentication-db-service
+#        - name: DB_PORT
+#          value: "3306"
+#        - name: DB_USER
+#          value: psn_admin
+#        - name: DB_PASSWORD
+#          value: "123"
+#        - name: DB_NAME
+#          value: psn-authentication-db
+#        - name: PSN_WA
+#          value: https://34.73.14.6
+#
+#        - name: LDAP_HOST
+#          value: psn-openldap-service
+#        - name: LDAP_PORT
+#          value: "389"
+#        - name: LDAP_BASE
+#          value: dc=pawsomenetwork,dc=com
+#        - name: LDAP_USER
+#          value: cn=admin,dc=pawsomenetwork,dc=com
+#        - name: LDAP_PASSWORD
+#          value: admin_pass
+         
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-ur-db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-ur-db
+  template:
+    metadata:
+      labels:
+        app: psn-ur-db
+    spec:
+      containers:
+      - name: psn-ur-db
+        image: neo4j
+        ports:
+        - containerPort: 7474
+        - containerPort: 7687
+        env:
+        - name: NEO4J_AUTH
+          value: neo4j/psn12345
+        - name: NEO4J_dbms_connector_bolt_listen__address
+          value: 0.0.0.0:7687
+        volumeMounts:
+        - name: psn-neo4j-volume
+          mountPath: /data
+        - name: psn-neo4j-volume
+          mountPath: /conf
+        - name: psn-neo4j-volume
+          mountPath: /logs
+        - name: psn-neo4j-volume
+          mountPath: /plugins
+      volumes:
+      - name: psn-neo4j-volume
+        persistentVolumeClaim:
+            claimName: psn-neo4j-claim
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-ur-ms-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-ur-ms
+  template:
+    metadata:
+      labels:
+        app: psn-ur-ms
+    spec:
+      containers:
+      - name: psn-ur-ms
+        image: julian9999/psn-ur-ms:v1.0
+        ports:
+        - containerPort: 4200
+        env:
+        - name: NEO4J_URI 
+          value: bolt://psn-ur-db-service:7687
+        - name: NEO4J_USERNAME
+          value: neo4j
+        - name: NEO4J_PASSWORD
+          value: psn12345
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-post-ms-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-post-ms
+  template:
+    metadata:
+      labels:
+        app: psn-post-ms
+    spec:
+      containers:
+      - name: psn-post-ms
+        image: julian9999/psn-post-ms:v1.0
+        ports:
+        - containerPort: 4100
+        env:
+        - name: MONGO_URI
+          value: mongodb+srv://jrojasce:jkvUIs1rFxeB4NHR@psn-post-db.izodfgc.mongodb.net/test
+        - name: PORT
+          value: "4100"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-chat-ms-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-chat-ms
+  template:
+    metadata:
+      labels:
+        app: psn-chat-ms
+    spec:
+      containers:
+      - name: psn-chat-ms
+        image: julian9999/psn-chat-ms:v1.0
+        ports:
+        - containerPort: 4300
+        env:
+        - name: MONGO_USER
+          value: jrojasce
+        - name: MONGO_PASSWORD
+          value: qcbWwimNLSrxjLr2
+        - name: MONGO_HOST
+          value: psn-chat-db.mpqzdgz.mongodb.net
+        - name: PORT
+          value: "4300"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-rabbitmq-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-rabbitmq
+  template:
+    metadata:
+      labels:
+        app: psn-rabbitmq
+    spec:
+      containers:
+      - name: psn-rabbitmq
+        image: rabbitmq:3-management
+        ports:
+        - containerPort: 5672
+        - containerPort: 15672
+        env:
+        - name: MONGO_USER
+          value: jrojasce
+        - name: MONGO_PASSWORD
+          value: FlkJ4IdOQrf6j5Cv
+        - name: MONGO_HOST
+          value: psn-notification-db.7aux5vf.mongodb.net
+        - name: PORT
+          value: "4400"
+        - name: RABBITMQ_DEFAULT_USER
+          value: admin
+        - name: RABBITMQ_DEFAULT_PASS
+          value: admin
+        - name: RABBITMQ_USER
+          value: admin
+        - name: RABBITMQ_PASSWORD
+          value: admin
+        - name: RABBITMQ_HOST
+          value: psn-rabbitmq-service
+        - name: RABBITMQ_QUEUE_NAME
+          value: notification
+        volumeMounts:
+        - name: psn-rabbitmq-volume
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: psn-rabbitmq-volume
+        persistentVolumeClaim:
+            claimName: psn-rabbitmq-claim
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-notification-ms-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-notification-ms
+  template:
+    metadata:
+      labels:
+        app: psn-notification-ms
+    spec:
+      containers:
+      - name: psn-notification-ms
+        image: julian9999/psn-notification-ms:v1.0
+        ports:
+        - containerPort: 4400
+        env:
+        - name: MONGO_USER
+          value: jrojasce
+        - name: MONGO_PASSWORD
+          value: FlkJ4IdOQrf6j5Cv
+        - name: MONGO_HOST
+          value: psn-notification-db.7aux5vf.mongodb.net
+        - name: PORT
+          value: "4400"
+        - name: RABBITMQ_DEFAULT_USER
+          value: admin
+        - name: RABBITMQ_DEFAULT_PASS
+          value: admin
+        - name: RABBITMQ_USER
+          value: admin
+        - name: RABBITMQ_PASSWORD
+          value: admin
+        - name: RABBITMQ_HOST
+          value: psn-rabbitmq-service
+        - name: RABBITMQ_QUEUE_NAME
+          value: notification
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-notification-ws-ms-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-notification-ws-ms
+  template:
+    metadata:
+      labels:
+        app: psn-notification-ws-ms
+    spec:
+      containers:
+      - name: psn-notification-ws-ms
+        image: julian9999/psn-notification-ws-ms:v1.0
+        ports:
+        - containerPort: 4401
+        env:
+        - name: PORT
+          value: "4401"
+        - name: RABBITMQ_DEFAULT_USER
+          value: admin
+        - name: RABBITMQ_DEFAULT_PASS
+          value: admin
+        - name: RABBITMQ_USER
+          value: admin
+        - name: RABBITMQ_PASSWORD
+          value: admin
+        - name: RABBITMQ_HOST
+          value: psn-rabbitmq-service
+        - name: RABBITMQ_QUEUE_NAME
+          value: notification
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-ag-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-ag
+  template:
+    metadata:
+      labels:
+        app: psn-ag
+    spec:
+      containers:
+      - name: psn-ag
+        image: julian9999/psn-ag:v1.0
+        ports:
+        - containerPort: 4500
+        env:
+        - name: SERVICE_ACCOUNT_FILE
+          value: /psn_ag/psn.json
+        - name: BUCKET_NAME
+          value: psn_bucket1
+      imagePullSecrets:
+        - name: psn-ag-secret
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-ag-rp-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-ag-rp
+  template:
+    metadata:
+      labels:
+        app: psn-ag-rp
+    spec:
+      containers:
+        - name: psn-ag-rp
+          image: julian9999/psn-ag-rp:v1.0
+          ports:
+            - containerPort: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-interface-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-interface
+  template:
+    metadata:
+      labels:
+        app: psn-interface
+    spec:
+      containers:
+        - name: psn-interface
+          image: julian9999/psn-interface:v1.0
+          ports:
+            - containerPort: 4700
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-interface-rp-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-interface-rp
+  template:
+    metadata:
+      labels:
+        app: psn-interface-rp
+    spec:
+      containers:
+        - name: psn-interface-rp
+          image: julian9999/psn-interface-rp:v1.0
+          ports:
+            - containerPort: 80
+            
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-wa-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-wa
+  template:
+    metadata:
+      labels:
+        app: psn-wa
+    spec:
+      containers:
+        - name: psn-wa
+          image: julian9999/psn-wa:v1.0
+          ports:
+            - containerPort: 4600
+
+---
+
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: psn-wa-rp-deployment
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: psn-wa-rp
+#  template:
+#    metadata:
+#      labels:
+#        app: psn-wa-rp
+#    spec:
+#      containers:
+#        - name: psn-wa-rp
+#          image: julian9999/psn-wa-rp:v1.0
+#          ports:
+#            - containerPort: 80
+#            - containerPort: 443
+        
+---

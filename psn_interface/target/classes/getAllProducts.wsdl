@@ -1,0 +1,60 @@
+<wsdl:definitions xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:plink="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:wsdlsoap11="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdlsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap11env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap12env="http://www.w3.org/2003/05/soap-envelope" xmlns:soap12enc="http://www.w3.org/2003/05/soap-encoding" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing" xmlns:xop="http://www.w3.org/2004/08/xop/include" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="your-namespace" targetNamespace="your-namespace" name="Application">
+<wsdl:types>
+<xs:schema targetNamespace="your-namespace" elementFormDefault="qualified">
+<xs:complexType name="getAllProducts"/>
+<xs:complexType name="Producto">
+<xs:sequence>
+<xs:element name="idProducto" type="xs:integer" minOccurs="0" nillable="true"/>
+<xs:element name="nombre" type="xs:string" minOccurs="0" nillable="true"/>
+<xs:element name="descripcion" type="xs:string" minOccurs="0" nillable="true"/>
+<xs:element name="precio" type="xs:integer" minOccurs="0" nillable="true"/>
+<xs:element name="cantidadDisponible" type="xs:integer" minOccurs="0" nillable="true"/>
+<xs:element name="categoria" type="xs:string" minOccurs="0" nillable="true"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="ProductoArray">
+<xs:sequence>
+<xs:element name="Producto" type="tns:Producto" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="getAllProductsResponse">
+<xs:sequence>
+<xs:element name="getAllProductsResult" type="tns:ProductoArray" minOccurs="0" nillable="true"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getAllProducts" type="tns:getAllProducts"/>
+<xs:element name="Producto" type="tns:Producto"/>
+<xs:element name="ProductoArray" type="tns:ProductoArray"/>
+<xs:element name="getAllProductsResponse" type="tns:getAllProductsResponse"/>
+</xs:schema>
+</wsdl:types>
+<wsdl:message name="getAllProducts">
+<wsdl:part name="getAllProducts" element="tns:getAllProducts"/>
+</wsdl:message>
+<wsdl:message name="getAllProductsResponse">
+<wsdl:part name="getAllProductsResponse" element="tns:getAllProductsResponse"/>
+</wsdl:message>
+<wsdl:service name="Service">
+<wsdl:port name="Application" binding="tns:Application">
+<wsdlsoap11:address location="http://34.72.168.189:100/"/>
+</wsdl:port>
+</wsdl:service>
+<wsdl:portType name="Application">
+<wsdl:operation name="getAllProducts" parameterOrder="getAllProducts">
+<wsdl:input name="getAllProducts" message="tns:getAllProducts"/>
+<wsdl:output name="getAllProductsResponse" message="tns:getAllProductsResponse"/>
+</wsdl:operation>
+</wsdl:portType>
+<wsdl:binding name="Application" type="tns:Application">
+<wsdlsoap11:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+<wsdl:operation name="getAllProducts">
+<wsdlsoap11:operation soapAction="getAllProducts" style="document"/>
+<wsdl:input name="getAllProducts">
+<wsdlsoap11:body use="literal"/>
+</wsdl:input>
+<wsdl:output name="getAllProductsResponse">
+<wsdlsoap11:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+</wsdl:binding>
+</wsdl:definitions>

@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: psn-openldap-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  volumeName: psn-openldap-persistent-volume
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: psn-mysql-claim
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  volumeName: psn-mysql-persistent-volume
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: psn-neo4j-claim
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  volumeName: psn-neo4j-persistent-volume
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: psn-rabbitmq-claim
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  volumeName: psn-rabbitmq-persistent-volume
+
+---

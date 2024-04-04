@@ -1,0 +1,336 @@
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: psn-authentication-ms-deployment
+#spec:
+#  replicas: 1 #3
+#  selector:
+#    matchLabels:
+#      app: psn-authentication-ms
+#  template:
+#    metadata:
+#      labels:
+#        app: psn-authentication-ms
+#    spec:
+#      containers:
+#      - name: psn-authentication-ms
+#        image: julian9999/psn-authentication-ms:v1.0
+#        ports:
+#        - containerPort: 4000
+#        env:
+#        - name: DB_HOST
+#          value: psn-authentication-db-service.loadbalancer.dns
+#        - name: DB_PORT
+#          value: "3306"
+#        - name: DB_USER
+#          value: root
+#        - name: DB_PASSWORD
+#          value: "123"
+#        - name: DB_NAME
+#          value: psn-authentication-db
+#        - name: PSN_WA
+#          value: https://34.75.238.1
+#
+#        - name: LDAP_HOST
+#          value: psn-openldap-service
+#        - name: LDAP_PORT
+#          value: "389"
+#        - name: LDAP_BASE
+#          value: dc=pawsomenetwork,dc=com
+#        - name: LDAP_USER
+#          value: cn=admin,dc=pawsomenetwork,dc=com
+#        - name: LDAP_PASSWORD
+#          value: admin_pass
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-ur-ms-deployment
+spec:
+  replicas: 3 #1
+  selector:
+    matchLabels:
+      app: psn-ur-ms
+  template:
+    metadata:
+      labels:
+        app: psn-ur-ms
+    spec:
+      containers:
+      - name: psn-ur-ms
+        image: julian9999/psn-ur-ms:v1.0
+        ports:
+        - containerPort: 4200
+        env:
+        - name: NEO4J_URI 
+          value: bolt://psn-ur-db-service.loadbalancer.dns:7687
+        - name: NEO4J_USERNAME
+          value: neo4j
+        - name: NEO4J_PASSWORD
+          value: Bz3MNh6v
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-post-ms-deployment
+spec:
+  replicas: 3 #1
+  selector:
+    matchLabels:
+      app: psn-post-ms
+  template:
+    metadata:
+      labels:
+        app: psn-post-ms
+    spec:
+      containers:
+      - name: psn-post-ms
+        image: julian9999/psn-post-ms:v1.0
+        ports:
+        - containerPort: 4100
+        env:
+        - name: MONGO_URI
+          value: mongodb+srv://jrojasce:jkvUIs1rFxeB4NHR@psn-post-db.izodfgc.mongodb.net/test
+        - name: PORT
+          value: "4100"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-chat-ms-deployment
+spec:
+  replicas: 3 #1
+  selector:
+    matchLabels:
+      app: psn-chat-ms
+  template:
+    metadata:
+      labels:
+        app: psn-chat-ms
+    spec:
+      containers:
+      - name: psn-chat-ms
+        image: julian9999/psn-chat-ms:v1.0
+        ports:
+        - containerPort: 4300
+        env:
+        - name: MONGO_USER
+          value: jrojasce
+        - name: MONGO_PASSWORD
+          value: qcbWwimNLSrxjLr2
+        - name: MONGO_HOST
+          value: psn-chat-db.mpqzdgz.mongodb.net
+        - name: PORT
+          value: "4300"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-rabbitmq-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-rabbitmq
+  template:
+    metadata:
+      labels:
+        app: psn-rabbitmq
+    spec:
+      containers:
+      - name: psn-rabbitmq
+        image: rabbitmq:3-management
+        ports:
+        - containerPort: 5672
+        - containerPort: 15672
+        env:
+        - name: MONGO_USER
+          value: jrojasce
+        - name: MONGO_PASSWORD
+          value: FlkJ4IdOQrf6j5Cv
+        - name: MONGO_HOST
+          value: psn-notification-db.7aux5vf.mongodb.net
+        - name: PORT
+          value: "4400"
+        - name: RABBITMQ_DEFAULT_USER
+          value: admin
+        - name: RABBITMQ_DEFAULT_PASS
+          value: admin
+        - name: RABBITMQ_USER
+          value: admin
+        - name: RABBITMQ_PASSWORD
+          value: admin
+        - name: RABBITMQ_HOST
+          value: psn-rabbitmq-service
+        - name: RABBITMQ_QUEUE_NAME
+          value: notification
+        volumeMounts:
+        - name: psn-rabbitmq-volume
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: psn-rabbitmq-volume
+        persistentVolumeClaim:
+            claimName: psn-rabbitmq-claim
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-notification-ms-deployment
+spec:
+  replicas: 3 #1
+  selector:
+    matchLabels:
+      app: psn-notification-ms
+  template:
+    metadata:
+      labels:
+        app: psn-notification-ms
+    spec:
+      containers:
+      - name: psn-notification-ms
+        image: julian9999/psn-notification-ms:v1.0
+        ports:
+        - containerPort: 4400
+        env:
+        - name: MONGO_USER
+          value: jrojasce
+        - name: MONGO_PASSWORD
+          value: FlkJ4IdOQrf6j5Cv
+        - name: MONGO_HOST
+          value: psn-notification-db.7aux5vf.mongodb.net
+        - name: PORT
+          value: "4400"
+        - name: RABBITMQ_DEFAULT_USER
+          value: admin
+        - name: RABBITMQ_DEFAULT_PASS
+          value: admin
+        - name: RABBITMQ_USER
+          value: admin
+        - name: RABBITMQ_PASSWORD
+          value: admin
+        - name: RABBITMQ_HOST
+          value: psn-rabbitmq-service
+        - name: RABBITMQ_QUEUE_NAME
+          value: notification
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-notification-ws-ms-deployment
+spec:
+  replicas: 3 #1
+  selector:
+    matchLabels:
+      app: psn-notification-ws-ms
+  template:
+    metadata:
+      labels:
+        app: psn-notification-ws-ms
+    spec:
+      containers:
+      - name: psn-notification-ws-ms
+        image: julian9999/psn-notification-ws-ms:v1.0
+        ports:
+        - containerPort: 4401
+        env:
+        - name: PORT
+          value: "4401"
+        - name: RABBITMQ_DEFAULT_USER
+          value: admin
+        - name: RABBITMQ_DEFAULT_PASS
+          value: admin
+        - name: RABBITMQ_USER
+          value: admin
+        - name: RABBITMQ_PASSWORD
+          value: admin
+        - name: RABBITMQ_HOST
+          value: psn-rabbitmq-service
+        - name: RABBITMQ_QUEUE_NAME
+          value: notification
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-ag-deployment
+spec:
+  replicas: 3 #1
+  selector:
+    matchLabels:
+      app: psn-ag
+  template:
+    metadata:
+      labels:
+        app: psn-ag
+    spec:
+      containers:
+      - name: psn-ag
+        image: julian9999/psn-ag:v1.0
+        ports:
+        - containerPort: 4500
+        env:
+        - name: SERVICE_ACCOUNT_FILE
+          value: /psn_ag/psn.json
+        - name: BUCKET_NAME
+          value: psn_bucket1
+      imagePullSecrets:
+        - name: psn-ag-secret
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-interface-deployment
+spec:
+  replicas: 3 #1
+  selector:
+    matchLabels:
+      app: psn-interface
+  template:
+    metadata:
+      labels:
+        app: psn-interface
+    spec:
+      containers:
+        - name: psn-interface
+          image: julian9999/psn-interface:v1.0
+          ports:
+            - containerPort: 4700
+            
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-wa-deployment
+spec:
+  replicas: 3 #1
+  selector:
+    matchLabels:
+      app: psn-wa
+  template:
+    metadata:
+      labels:
+        app: psn-wa
+    spec:
+      containers:
+        - name: psn-wa
+          image: julian9999/psn-wa:v1.0
+          ports:
+            - containerPort: 4600
+        
+---

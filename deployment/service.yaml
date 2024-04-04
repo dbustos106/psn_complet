@@ -1,0 +1,340 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-openldap-service
+spec:
+  selector:
+    app: psn-openldap
+  ports:
+  - name: ldap1
+    protocol: TCP
+    port: 389
+    targetPort: 389
+  - name: ldap2
+    port: 636
+    targetPort: 636
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-phpldapadmin-service
+spec:
+  selector:
+    app: psn-phpldapadmin
+  ports:
+    - name: http
+      port: 4003
+      targetPort: 80
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-authentication-db-service
+spec:
+  selector:
+    app: psn-authentication-db
+  ports:
+  - name: mysql
+    protocol: TCP
+    port: 3306
+    targetPort: 3306
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-phpmyadmin-service
+spec:
+  selector:
+    app: psn-phpmyadmin
+  ports:
+  - name: http
+    port: 4002
+    targetPort: 80
+  type: LoadBalancer
+
+---
+
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: psn-authentication-ms-service
+#spec:
+#  selector:
+#    app: psn-authentication-ms
+#  ports:
+#  - name: http
+#    protocol: TCP
+#    port: 4000
+#    targetPort: 4000
+#  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-ur-db-service
+spec:
+  selector:
+    app: psn-ur-db
+  ports:
+  - name: http
+    protocol: TCP
+    port: 7474
+    targetPort: 7474
+  - name: https
+    protocol: TCP
+    port: 7687
+    targetPort: 7687
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-ur-db-admin-service
+spec:
+  selector:
+    app: psn-ur-db
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4201
+    targetPort: 7474
+  - name: https
+    protocol: TCP
+    port: 4202
+    targetPort: 7687
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-ur-ms-service
+spec:
+  selector:
+    app: psn-ur-ms
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4200
+    targetPort: 4200
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-post-ms-service
+spec:
+  selector:
+    app: psn-post-ms
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4100
+    targetPort: 4100
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-chat-ms-service
+spec:
+  selector:
+    app: psn-chat-ms
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4300
+    targetPort: 4300
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-rabbitmq-service
+spec:
+  selector:
+    app: psn-rabbitmq
+  ports:
+  - name: http
+    protocol: TCP
+    port: 5672
+    targetPort: 5672
+  - name: https
+    protocol: TCP
+    port: 15672
+    targetPort: 15672
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-rabbitmq-admin-service
+spec:
+  selector:
+    app: psn-rabbitmq
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4402
+    targetPort: 5672
+  - name: https
+    protocol: TCP
+    port: 4403
+    targetPort: 15672
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-notification-ms-service
+spec:
+  selector:
+    app: psn-notification-ms
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4400
+    targetPort: 4400
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-notification-ws-ms-service
+spec:
+  selector:
+    app: psn-notification-ws-ms
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4401
+    targetPort: 4401
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-ag-service
+spec:
+  selector:
+    app: psn-ag
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4500
+    targetPort: 4500
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-ag-rp-service
+spec:
+  selector:
+    app: psn-ag-rp
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-interface-service
+spec:
+  selector:
+    app: psn-interface
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4700
+    targetPort: 4700
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-interface-rp-service
+spec:
+  selector:
+    app: psn-interface-rp
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-wa-service
+spec:
+  selector:
+    app: psn-wa
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4600
+    targetPort: 4600
+  type: ClusterIP
+
+---
+
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: psn-wa-rp-service
+#spec:
+#  selector:
+#    app: psn-wa-rp
+#  ports:
+#  - name: http
+#    protocol: TCP
+#    port: 80
+#    targetPort: 80
+#  - name: https
+#    protocol: TCP
+#    port: 443
+#    targetPort: 443
+#  type: LoadBalancer
+
+---

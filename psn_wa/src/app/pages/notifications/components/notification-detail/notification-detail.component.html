@@ -1,0 +1,10 @@
+<div class="container" [routerLink]="['/psn/userrs/follow']" *ngIf="notification.type === 'FRIEND_REQUEST' || notification.type === 'FRIEND_CONFIRMATION'">
+  <div class="notification-container">
+    <div class="notification-details">   
+      <span class="notification-time">{{ notification.createDate | date:'shortTime' }}</span>
+    </div>
+    <div class="notification-content">
+      {{ notification.content }}
+    </div>
+  </div>
+</div>

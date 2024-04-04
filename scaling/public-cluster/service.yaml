@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-phpldapadmin-service
+spec:
+  selector:
+    app: psn-phpldapadmin
+  ports:
+    - name: http
+      port: 4003
+      targetPort: 80
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-phpmyadmin-service
+spec:
+  selector:
+    app: psn-phpmyadmin
+  ports:
+  - name: http
+    port: 4002
+    targetPort: 80
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-ag-rp-service
+spec:
+  selector:
+    app: psn-ag-rp
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-interface-rp-service
+spec:
+  selector:
+    app: psn-interface-rp
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-wa-rp-service
+spec:
+  selector:
+    app: psn-wa-rp
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 443
+  type: LoadBalancer
+
+---

@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-authentication-ms-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-authentication-ms
+  template:
+    metadata:
+      labels:
+        app: psn-authentication-ms
+    spec:
+      containers:
+      - name: psn-authentication-ms
+        image: julian9999/psn-authentication-ms:v1.0
+        ports:
+        - containerPort: 4000
+        env:
+        - name: DB_HOST
+          value: psn-authentication-db-service
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_USER
+          value: psn_admin
+        - name: DB_PASSWORD
+          value: "123"
+        - name: DB_NAME
+          value: psn-authentication-db
+        - name: PSN_WA
+          value: https://34.148.173.24
+
+        - name: LDAP_HOST
+          value: psn-openldap-service
+        - name: LDAP_PORT
+          value: "389"
+        - name: LDAP_BASE
+          value: dc=pawsomenetwork,dc=com
+        - name: LDAP_USER
+          value: cn=admin,dc=pawsomenetwork,dc=com
+        - name: LDAP_PASSWORD
+          value: admin_pass
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: psn-authentication-ms-service
+spec:
+  selector:
+    app: psn-authentication-ms
+  ports:
+  - name: http
+    protocol: TCP
+    port: 4000
+    targetPort: 4000
+  type: ClusterIP
+
+---
