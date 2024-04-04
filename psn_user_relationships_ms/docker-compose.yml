@@ -1,0 +1,38 @@
+version: '4.17'
+services:
+  psn-ur-db-service:
+    image: neo4j
+    container_name: psn-ur-db-service
+    ports:
+      - 7474:7474
+      - 7687:7687
+    restart: unless-stopped
+    environment:
+      - NEO4J_AUTH=neo4j/psn12345
+      - NEO4J_dbms_connector_bolt_listen__address=0.0.0.0:7687
+    volumes:
+      - ./db/data:/data
+      - ./db/conf:/conf
+      - ./db/logs:/logs
+      - ./db/plugins:/plugins
+    networks:
+      - psn_network
+
+  psn-ur-ms-service:
+    image: psn-ur-ms-service
+    build: .
+    container_name: psn-ur-ms-service
+    ports:
+      - "4200:4200"
+    environment:
+      - NEO4J_URI=bolt://psn-ur-db-service:7687
+      - NEO4J_USERNAME=neo4j
+      - NEO4J_PASSWORD=psn12345
+    volumes:
+      - ".:/psn-ur-ms"
+    networks:
+      - psn_network
+
+networks:
+  psn_network:
+    external: True

@@ -1,9 +1,2 @@
 data
 db
-psn_ag
-psn_authentication
-psn_chat_ms
-psn_notification_ms
-psn_notification_ws_ms
-psn_post_ms
-psn_user_relationships_ms

@@ -1,0 +1,45 @@
+version: '4.17'
+services:
+  psn-rabbitmq-service:
+    image: rabbitmq:3-management
+    container_name: psn-rabbitmq-service
+    hostname: psn-rabbitmq-service
+    volumes:
+      - /var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - .env
+    networks:
+      - psn_network
+
+  psn-notification-ms-service:
+    image: psn-notification-ms-service
+    build: .
+    container_name: psn-notification-ms-service
+    env_file:
+      - .env
+    ports:
+      - "4400:4400"
+    depends_on: 
+      - psn-rabbitmq-service
+    networks:
+      - psn_network
+    
+  psn-notification-ws-ms-service:
+    image: psn-notification-ws-ms-service
+    build: ../psn_notification_ws_ms
+    container_name: psn-notification-ws-ms-service
+    env_file:
+      - ../psn_notification_ws_ms/.env
+    ports:
+      - "4401:4401"
+    depends_on: 
+      - psn-rabbitmq-service
+    networks:
+      - psn_network
+
+networks:
+  psn_network:
+    external: true

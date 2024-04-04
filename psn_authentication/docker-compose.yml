@@ -1,0 +1,98 @@
+version: '4.17'
+services:
+  psn-openldap-service:
+    image: osixia/openldap:latest
+    container_name: psn-openldap-service
+    hostname: psn-openldap-service
+    ports: 
+      - "389:389"
+      - "636:636"
+    volumes:
+      - ./data/certificates:/container/service/slapd/assets/certs
+      - ./data/slapd/database:/var/lib/ldap
+      - ./data/slapd/config:/etc/ldap/slapd.d
+    environment: 
+      - LDAP_ORGANISATION=pawsomenetwork
+      - LDAP_DOMAIN=pawsomenetwork.com
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=admin_pass
+      - LDAP_CONFIG_PASSWORD=config_pass
+      - LDAP_BASE_DN=dc=pawsomenetwork,dc=com
+      - LDAP_TLS_CRT_FILENAME=server.crt
+      - LDAP_TLS_KEY_FILENAME=server.key
+      - LDAP_TLS_CA_CRT_FILENAME=pawsomenetwork.com.ca.crt
+      - LDAP_READONLY_USER=true
+      - LDAP_READONLY_USER_USERNAME=user-ro
+      - LDAP_READONLY_USER_PASSWORD=ro_pass
+    networks:
+      - psn_network
+  
+  psn-phpldapadmin-service:
+    image: osixia/phpldapadmin:latest
+    container_name: psn-phpldapadmin-service
+    hostname: psn-phpldapadmin-service
+    ports: 
+      - "4003:80"
+    environment: 
+      - PHPLDAPADMIN_LDAP_HOSTS=psn-openldap-service
+      - LDAP_HOSTS=psn-openldap-service
+      - PHPLDAPADMIN_HTTPS=false
+    depends_on:
+      - psn-openldap-service
+    networks:
+      - psn_network
+
+  psn-authentication-db-service:
+    build: ./psn_authentication_db
+    container_name: psn-authentication-db-service
+    hostname: psn-authentication-db-service
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123
+      - MYSQL_DATABASE=psn-authentication-db
+      - MYSQL_USER=psn_admin
+      - MYSQL_PASSWORD=123
+    networks:
+      - psn_network
+
+  psn-phpmyadmin-service:
+    image: phpmyadmin/phpmyadmin
+    container_name: psn-phpmyadmin-service
+    ports:
+      - "4002:80"
+    environment:
+      PMA_HOST: psn-authentication-db-service
+    depends_on:
+      - psn-authentication-db-service
+    networks:
+      - psn_network
+
+  psn-authentication-ms-service:
+    build: ./psn_authentication_ms
+    container_name: psn-authentication-ms-service
+    hostname: psn-authentication-ms-service
+    ports:
+      - "4000:4000"
+    environment:
+      - DB_HOST=psn-authentication-db-service
+      - DB_PORT=3306
+      - DB_USER=psn_admin
+      - DB_PASSWORD=123
+      - DB_NAME=psn-authentication-db
+      - PSN_WA=localhost
+
+      - LDAP_HOST=psn-openldap-service
+      - LDAP_PORT=389
+      - LDAP_BASE=dc=pawsomenetwork,dc=com
+      - LDAP_USER=cn=admin,dc=pawsomenetwork,dc=com
+      - LDAP_PASSWORD=admin_pass
+    depends_on:
+      - psn-authentication-db-service
+      - psn-openldap-service
+    networks:
+      - psn_network
+      
+networks:
+  psn_network:
+    external: true
